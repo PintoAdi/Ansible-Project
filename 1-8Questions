@@ -1,0 +1,48 @@
+1. Write ad-hoc commands for
+
+I. Create an empty folder.
+II. Create an empty file in the above folder.
+III. Copy the content (“Hi socialprachar students”) in your above file.
+IV. Write the playbook for installing git, clone the code from the GitHub.
+
+2. Write the playbook for
+
+I. Create an empty folder
+II. Create an empty file in the above folder.
+III. Copy the content (“Hi socialprachar students”) in your above file.
+IV. Write the ad-hoc commands for installing git, clone the code from the GitHub.
+
+3. Write the playbook for
+
+I. Create an empty file
+II. Create an empty folder
+III. Copy the content (“Hi socialprachar students”) in your above file.
+IV. Copy or move that above file to the above created folder by using ad-hoc
+commands.
+
+4. What is the module to download any url from the browser? (playbook)
+
+I. Download the tomcat url
+II. Extract that url
+III. By using command module install git, check the list of files and folders in
+another server ( ad-hoc)
+
+5. Write the playbook for
+
+I. Install Docker
+II. Start the Docker
+III. Enable Docker
+IV. Give the permission for Docker daemon.
+V. Check the status of Docker by using ad-hoc command.
+
+6. By using shell module with playbook
+
+I. Install httpd
+II. Install git
+III. Clone the code from github
+IV. Deploy the code with httpd
+V. Check the status of httpd by using ad-hoc command.
+
+7. By using playbook install, start and enable httpd server in Ubuntu. Check the status of httpd by using ad-hoc command.
+
+8. Create a playbook to install Jenkins in amazon Linux.

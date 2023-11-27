@@ -1,0 +1,10 @@
+ansible --list-host all
+ansible A2 -m ping
+ansible A2 -m file -a "dest=/home/ec2-user/ansible.txt state=touch"
+ansible A2 -m command -a "ls -la"
+ansible A2 -m command -a "mkdir adi"
+ansible A2 -m package -a "name=git state=present" -b
+ansible A2 -m command -a "git -v"
+
+ansible A2 -m package -a "name=httpd state=present" -b
+ansible A2 -m command -a "systemctl status httpd" -b

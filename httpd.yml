@@ -1,0 +1,37 @@
+---
+- name: Install httpd and do the needed
+  hosts: A2
+  become: true
+
+  tasks:
+
+    - name: Update packages
+      yum:
+        name: '*'
+        state: latest
+      become: true
+
+    - name: Install apache
+      yum:
+        name: httpd
+        state: present
+      become: true
+
+    - name: Start apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Check apache status
+      service:
+        name: httpd
+        state: restarted
+        enabled: yes
+      register: httpd_status
+
+    - name: Set permissions and update index.html
+      shell: |
+        sudo chmod 007 /var/www/html/index.html
+        sudo echo "Hello this is task-2 using ansible playbook for httpd" >> /var/www/html/index.html
+      when: httpd_status.changed

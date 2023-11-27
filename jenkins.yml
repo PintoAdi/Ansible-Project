@@ -1,0 +1,38 @@
+---
+- name: Install Jenkins on Amazon Linux
+  hosts: w1
+  become: true
+
+  tasks:
+    - name: Update system
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install Java OpenJDK 11
+      yum:
+        name: java-11-openjdk
+        state: present
+
+    - name: using wget to use the repository from jenkins installation website
+      get_url:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: Import the Key
+      rpm_key:
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+        state: present
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+#Open the 8080 port for the Instance in Security Group and check with the publicip:8080

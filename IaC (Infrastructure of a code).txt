@@ -1,0 +1,25 @@
+IaC (Infrastructure of a code):
+
+Process to manage and provision the infrastructture through the machine readable code. It is used for automation, you do not require the use of GUI which takes time.
+
+Tools: 
+Terraform, Pulumi, AWS Cloudformation, Vagrant 
+Chef, Puppet, Ansible are configuration management but also use as IaC  
+
+Ansible Intro:
+
+Ansible:
+An open-source automation tool with a simple language (yaml or yml or json) that can describe the IT application architecture in Ansible Playbooks in a human readable format.
+
+Why Ansible?
+Currently we are doing everything manually in the AWS Console GUI which is time consuming and flexible.
+
+Ansible can be integrated with most of the cloud Platforms.
+AWS, GCP, Azure, IBM, Oracle, VMWare, OpenShift
+
+Ansible with AWS:
+- Modules & Plugins
+- Manage all resources
+- API support
+
+

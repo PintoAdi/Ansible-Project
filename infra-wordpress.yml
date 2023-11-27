@@ -1,0 +1,159 @@
+---
+- name: Create infrastructure
+  hosts: w1
+
+  tasks:
+
+  - name: create a new EC2 key pair
+    amazon.aws.ec2_key:
+      name: ansible_kpair
+      region: us-east-1
+
+  - name: Create a VPC
+    amazon.aws.ec2_vpc_net:
+      name: Ansible-VPC
+      cidr_block: 10.10.0.0/16
+      region: us-east-1
+      tenancy: default
+    register: vpc
+
+  - name: Debug Instance State
+    debug:
+      var: vpc
+
+  - name: Create Internet gateway
+    amazon.aws.ec2_vpc_igw:
+      vpc_id: "{{ vpc.vpc.id }}"
+      state: present
+      region: us-east-1
+      tags:
+        Name: ansible-igw
+    register: igw
+
+  - name: Debug Instance State
+    debug:
+      var: igw
+
+  - name: Create subnet-1
+    amazon.aws.ec2_vpc_subnet:
+      state: present
+      vpc_id: "{{ vpc.vpc.id }}"
+      cidr: 10.10.30.0/24
+      region: us-east-1
+      az: us-east-1a
+      tags:
+        Name: Subnet-1
+    register: subnet1
+
+  - name: Debug Instance State
+    debug:
+      var: subnet1
+
+  - name: Create subnet-2
+    amazon.aws.ec2_vpc_subnet:
+      state: present
+      vpc_id: "{{ vpc.vpc.id }}"
+      cidr: 10.10.60.0/24
+      region: us-east-1
+      az: us-east-1b
+      tags:
+        Name: Subnet-2
+    register: subnet2
+
+  - name: Debug Instance State
+    debug:
+      var: subnet2
+
+  - name: Set up public subnet route table
+    amazon.aws.ec2_vpc_route_table:
+      vpc_id: "{{ vpc.vpc.id }}"
+      region: us-east-1
+      tags:
+        Name: P_RT
+      subnets:
+        - "{{ subnet1.subnet.id }}"
+        - "{{ subnet2.subnet.id }}"
+      routes:
+        - dest: 0.0.0.0/0
+          gateway_id: "{{ igw.gateway_id }}"
+    register: public_route_table
+
+  - name: Debug Instance State
+    debug:
+      var: public_route_table
+
+  - name: Create Security Group
+    amazon.aws.ec2_security_group:
+      name: vpc-sg
+      description: A Sg for allowing ssh and http
+      vpc_id: "{{ vpc.vpc.id }}"
+      region: us-east-1
+      rules:
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 3306
+          to_port: 3306
+          cidr_ip: 0.0.0.0/0
+    register: security_group
+
+  - name: Debug Instance State
+    debug:
+      var: security_group
+
+  - name: Create instance
+    amazon.aws.ec2_instance:
+      name: "Wordpress"
+      key_name: "ansible_kpair"
+      subnet_id: "{{ subnet1.subnet.id }}"
+      instance_type: t2.micro
+      security_group: "{{ security_group.group_id }}"
+      region: us-east-1
+      user_data: "{{ lookup('file', '/home/ec2-user/wordpress.sh') }}"
+      network:
+        assign_public_ip: true
+      image_id: ami-0fa1ca9559f1892ec
+      tags:
+        Environment: Testing
+    register: Instance_1 
+
+  - name: Debug Instance State
+    debug:
+      var: Instance_1
+
+  - name: Add or change a subnet group
+    amazon.aws.rds_subnet_group:
+      state: present
+      name: wordpress-sbg
+      region: us-east-1
+      description: wordpress subnet group
+      subnets:
+        - "{{ subnet1.subnet.id }}"
+        - "{{ subnet2.subnet.id }}"
+
+  - name: Create a DB instance using the default AWS KMS encryption key
+    amazon.aws.rds_instance:
+      db_instance_identifier: Database-1
+      state: present
+      engine: mysql
+      engine_version: 8.0.33
+      db_instance_class: db.t2.medium
+      multi_az: true
+      master_username : "{{ admin }}"
+      master_user_password : "{{ Admin123 }}"
+      storage_type: "gp2"
+      allocated_storage: 50
+      publicly_accessible: false
+      region: us-east-1
+      db_name: testdb
+      vpc_security_group_ids: "{{ security_group.group_id }}"
+      db_subnet_group_name: "wordpress-sbg"
+      storage_encrypted: true
+      backup_retention_period: 0
+      deletion_protection: false

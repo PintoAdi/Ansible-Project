@@ -1,0 +1,31 @@
+## Update the system
+sudo yum update -y
+## Install ansible, python, and pip
+sudo yum install ansible python3-pip -y
+## Install boto3 using pip3
+pip3 install boto3
+## go to the ansible folder and create hosts file to add the hosts. By adding the host, when we perform a playbook to create infra, it will be created using the added hosts.
+cd /etc/ansible
+sudo touch hosts
+## edit the file hosts and add the required hosts
+sudo vim hosts
+ex:
+[web1]
+w1 ansible_host=privateip ansible_user=ec2-user or ubuntu ansible_ssh_private_key_file=path of the key
+## To connect to the host we need the key so use scp from your local machine to push the key 
+As you can see I have got the pem file
+give the UbuAdi.pem file the required permissions
+sudo chmod 400 UbuAdi.pem
+Once the required permissions and the hosts are given:
+1. we need to go to the Host-1 from the Master server and install python, pip and boto3 on the host servers for the ansbile-playbooks to work.
+2. ssh -i key ec2-user@Pub-ip-of-host-1
+3. sudo yum update -y; sudo yum install python3-pip -y
+pip3 install boto3
+Once installed exit back to master and continue creating the infrastructure using ansible playbooks
+Once you have installed ansible, python, pip, and boto3 on the master server.
+And also installed python, pip, and boto3 on the host-1 server.
+In the master server, we start creating the ansible playbooks for the creation of the aws infrastructure.
+Create a yaml file
+touch infra.yml 
+Add the required resources to the yaml file for creation of the aws infrastructure
+get the modules form https://docs.ansible.com/ansible/latest/collections/amazon/aws/index.html

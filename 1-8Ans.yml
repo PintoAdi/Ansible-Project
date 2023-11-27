@@ -1,0 +1,180 @@
+# Question-1
+# ansible w1 -m file -a "path=/home/ec2-user/adi state=directory"
+# ansible w1 -m file -a "path=/home/ec2-user/adi/adi.txt state=touch"
+# ansible w1 -m lineinfile -a "path=/home/ec2-user/adi/adi.txt line='Hi SocialPrachar students'"
+
+---
+- name: git install
+  hosts: w1
+  become: true
+
+  tasks:
+
+    - name: update
+      yum:
+        name: '*'
+        state: latest
+
+    - name: install git
+      yum:
+        name: git
+        state: present
+
+    - name: clone the repo
+      git:
+        repo: "git repo url"
+        dest: /home/ec2-user/adi
+
+# Question-2
+    
+    - name: create directory
+      file:
+        path: /home/ec2-user/adi
+        state: directory
+
+    - name: create file in the above directpry
+      file:
+        path: /home/ec2-user/adi/adi.txt
+        state: touch
+    
+    - name: add content to the file created above
+      lineinfile:
+        dest: /home/ec2-user/adi/adi.txt
+        line: "Hi SocialPrachar students"
+
+# ansible w1 -m package -a "name=git state=present"
+# ansible w1 -m git -a "repo=https://github.com/iamgini/ansible-real-life.git dest:/home/ec2-user/adi"
+
+# Question 3
+
+    - name: Create a file
+      file:
+        path: /home/ec2-user/adi.txt
+        state: touch
+    
+    - name: Create a folder
+      file:
+        path: /home/ec2-user/adi
+        state: directory
+
+    - name: content add to file
+      lineinfile:
+        dest: /home/ec2-user/adi.txt
+        line: "Hi SocialPrachar students"
+    
+    - name: move file to folder
+      copy:
+        src: /home/ec2-user/adi.txt
+        dest: /home/ec2-user/adi/adi.txt
+
+# ansible w1 -m copy -a "src=/home/ec2-user/adi.txt dest=/home/ec2-user/adi/adi.txt"
+
+# Question 4
+
+    - name: tomca url"
+      get_url:
+        url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.83/bin/apache-tomcat-9.0.83.tar.gz"
+        dest: "/opt/tomcat/apache-tomcat-9.0.83.tar.gz"
+
+    - name: Extract Tomcat archive
+      ansible.builtin.unarchive:
+        src: "/opt/tomcat/apache-tomcat-9.0.83.tar.gz"
+        dest: "/opt/tomcat"
+        remote_src: yes 
+
+# ansible w1 -m command -a "sudo yum install git"
+# ansible w1 -m command -a "ls -l"
+
+# Question 5
+
+    - name: install Docker
+      yum:
+        name: Docker
+        state: present
+
+    - name: start Docker
+      service:
+        name: Docker
+        state: started
+        enabled: yes
+
+    - name: Set permissions on Docker daemon socket file
+      file:
+        path: /var/run/docker.sock
+        mode: '0660'
+
+# ansible w1 -m service -a "name=docker state=started enabled=yes"
+
+# Question 6
+
+    - name: install httpd and git
+      ansible.builtin.shell: "yum install httpd git -y"
+
+    - name: clone the code
+      ansible.builtin.shell: "git clone https://github.com/PintoAdi/nodejs-sqlite-signin.git /var/html/www/nodejs-sqlite-signin"
+
+    - name: Deploy the code
+      ansible.builtin.shell: "systemctl start httpd && systemctl enable httpd"
+
+# ansible w1 -m service -a "name=httpd state=started enabled=yes"
+
+# Question 7
+
+    - name: update
+      apt:
+        upgrade: yes
+        update_cache: yes
+    
+    - name: httpd Install
+      apt:
+        name: apache2
+        state: present
+    
+    - name: start service
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+# ad-hoc command to check the status of the httpd (apache2) service
+# ansible w1 -m service -a (name=apache2 state=started enabled=yes) 
+
+# Question 8
+
+    - name: Update system
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install Java OpenJDK 11
+      yum:
+        name: java-11-openjdk
+        state: present
+
+    - name: using wget to use the repository from jenkins installation website
+      get_url:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: Import the Key
+      rpm_key:
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+        state: present
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+#Open the 8080 port for the Instance in Security Group and check with the publicip:8080
+
+
+    
+
+    

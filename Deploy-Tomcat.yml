@@ -1,0 +1,98 @@
+---
+- name: Install needed for Tomcat deployment
+  hosts: w6
+  become: true
+
+  tasks:
+
+    - name: Update packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install Java, Git, and Maven
+      yum:
+        name:
+          - java-1.8*
+          - git
+          - maven
+        state: present
+
+    - git:
+        repo: https://github.com/PintoAdi/JavaWebCalculator.git
+        dest: /home/ec2-user/task 
+
+    - name: Change to the project directory and run package
+      command: 
+        cmd: mvn package
+        chdir: /home/ec2-user/task
+
+    - name: Ensure Tomcat directory exists
+      file:
+        path: /opt/tomcat
+        state: directory
+
+    - name: Download and extract Tomcat
+      get_url:
+        url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.83/bin/apache-tomcat-9.0.83.tar.gz"
+        dest: "/opt/tomcat/apache-tomcat-9.0.83.tar.gz"
+
+    - name: Extract Tomcat archive
+      ansible.builtin.unarchive:
+        src: "/opt/tomcat/apache-tomcat-9.0.83.tar.gz"
+        dest: "/opt/tomcat"
+        remote_src: yes 
+
+    - name: Set Tomcat ownership
+      file:
+        path: /opt/tomcat/apache-tomcat-9.0.83
+        state: directory
+        recurse: yes
+
+    - name: Execute Tomcat startup.sh
+      command: "/opt/tomcat/apache-tomcat-9.0.83/bin/startup.sh"
+
+    - name: Remove line from context.xml
+      lineinfile:
+        path: /opt/tomcat/apache-tomcat-9.0.83/webapps/manager/META-INF/context.xml
+        state: absent
+        regexp: 'allow="127\\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1"/>'
+
+    - name: Remove Valve element line by line
+      lineinfile:
+        path: /opt/tomcat/apache-tomcat-9.0.83/webapps/manager/META-INF/context.xml
+        state: absent
+        regexp: '<Valve className="org\.apache\.catalina\.valves\.RemoteAddrValve"'
+
+    - name: Remove line from context.xml
+      lineinfile:
+        path: /opt/tomcat/apache-tomcat-9.0.83/webapps/host-manager/META-INF/context.xml
+        state: absent
+        regexp: '(?s)<Valve className="org\.apache\.catalina\.valves\.RemoteAddrValve".*?allow="127\\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1".*?/>'
+
+    - name: Remove Valve element line by line
+      lineinfile:
+        path: /opt/tomcat/apache-tomcat-9.0.83/webapps/host-manager/META-INF/context.xml
+        state: absent
+        regexp: '<Valve className="org\.apache\.catalina\.valves\.RemoteAddrValve"'
+
+    - name: Adding tomcat users in users.xml
+      lineinfile:
+        path: /opt/tomcat/apache-tomcat-9.0.83/conf/tomcat-users.xml
+        insertbefore: "</tomcat-users>"
+        line: |
+         <role rolename="manager-gui"/>
+         <user username="tom" password="pass" roles="manager-gui"/>
+
+    - name: Deploy the WAR file
+      copy:
+        src: "/home/ec2-user/task/target/webapp-0.1.war"
+        dest: "/opt/tomcat/apache-tomcat-9.0.83/webapps/"
+        remote_src: yes
+      notify: Restart Tomcat
+
+  handlers:
+    - name: Restart Tomcat
+      command: "/opt/tomcat/apache-tomcat-9.0.83/bin/shutdown.sh && sleep 5 && /opt/tomcat/apache-tomcat-9.0.83/bin/startup.sh"
+      async: 3000
+      poll: 0
