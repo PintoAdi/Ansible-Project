@@ -12,7 +12,7 @@ Ansible:
 An open-source automation tool with a simple language (yaml or yml or json) that can describe the IT application architecture in Ansible Playbooks in a human readable format.
 
 Why Ansible?
-Currently we are doing everything manually in the AWS Console GUI which is time consuming and flexible.
+Currently we are doing everything manually in the AWS Console GUI which is time consuming and not flexible.
 
 Ansible can be integrated with most of the cloud Platforms.
 AWS, GCP, Azure, IBM, Oracle, VMWare, OpenShift
