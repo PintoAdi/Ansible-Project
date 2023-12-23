@@ -1,6 +1,6 @@
 ---
 - name: Create infrastructure
-  hosts: w1
+  hosts: A1
 
   tasks:
 
