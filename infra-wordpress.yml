@@ -17,7 +17,7 @@
       tenancy: default
     register: vpc
 
-  - name: Debug Instance State
+  - name: Debug VPC
     debug:
       var: vpc
 
@@ -30,7 +30,7 @@
         Name: ansible-igw
     register: igw
 
-  - name: Debug Instance State
+  - name: Debug IGW
     debug:
       var: igw
 
@@ -45,7 +45,7 @@
         Name: Subnet-1
     register: subnet1
 
-  - name: Debug Instance State
+  - name: Debug subnet-1
     debug:
       var: subnet1
 
@@ -60,7 +60,7 @@
         Name: Subnet-2
     register: subnet2
 
-  - name: Debug Instance State
+  - name: Debug subnet-2
     debug:
       var: subnet2
 
@@ -78,7 +78,7 @@
           gateway_id: "{{ igw.gateway_id }}"
     register: public_route_table
 
-  - name: Debug Instance State
+  - name: Debug public route table
     debug:
       var: public_route_table
 
@@ -103,7 +103,7 @@
           cidr_ip: 0.0.0.0/0
     register: security_group
 
-  - name: Debug Instance State
+  - name: Debug security group
     debug:
       var: security_group
 
@@ -121,11 +121,11 @@
       image_id: ami-0fa1ca9559f1892ec
       tags:
         Environment: Testing
-    register: Instance_1 
+    register: Instance
 
   - name: Debug Instance State
     debug:
-      var: Instance_1
+      var: Instance
 
   - name: Add or change a subnet group
     amazon.aws.rds_subnet_group:
